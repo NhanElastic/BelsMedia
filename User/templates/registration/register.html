@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login</title>
+    <title>Resgister</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,16 +10,12 @@
 <body>
 
     <center>
-        <form method='POST'>
+        <form action='.' method='POST'>
           {% csrf_token %}
           {{form.as_p}}
-          <input type="submit" value="Login"/>
-
-          {% if error %}
-            <p>{{error}}</p>
-          {% endif %}
+          <input type="submit" value="Resgister"/>
+        </form>
     </center>
-
 
 </body>
 </html>
