@@ -11,7 +11,7 @@ class UserProfile(models.Model):
     profile_picture = ImageField(upload_to='profile_pics/', default=None)
     bio = TextField(default='')
     follower = IntegerField(default=0)
-    follwing = IntegerField(default=0)
+    following = IntegerField(default=0)
 
     def __str__(self):
         return self.username
@@ -27,7 +27,7 @@ class UserProfile(models.Model):
 
 class Follower(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='followers')
-    follower = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='following')
+    follower = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='followings')
     
     class Meta:
         unique_together = ('user', 'follower')
