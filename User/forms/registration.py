@@ -33,4 +33,3 @@ class RegistrationForm(forms.Form):
         password = self.cleaned_data['password1']
         print(password)
         new_user = UserProfile.objects.create(username=username, email=email, password=make_password(password))
-        return new_user
