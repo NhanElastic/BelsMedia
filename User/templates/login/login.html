@@ -14,7 +14,7 @@
           {% csrf_token %}
           {{form.as_p}}
           <input type="submit" value="Login"/>
-
+          <input type="button" value="Register" onclick="window.location.href='/register'"/>
           {% if error %}
             <p>{{error}}</p>
           {% endif %}

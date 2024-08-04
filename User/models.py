@@ -17,7 +17,7 @@ class UserProfile(models.Model):
     username = CharField(max_length=100, unique=True)
     email = EmailField(unique=True)
     password = CharField(max_length=100)
-    profile_picture = ImageField(upload_to='profile_pics/', default=None)
+    profile_picture = ImageField(upload_to='profile_pics/', default="https://www.w3schools.com/howto/img_avatar.png")
     bio = TextField(default='')
     follower = IntegerField(default=0)
     following = IntegerField(default=0)
@@ -48,6 +48,7 @@ class Follower(models.Model):
 class RefreshToken(models.Model):
     user = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
     token = models.CharField(max_length=255, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     expired_at = models.DateTimeField()
     
     def __str__(self):

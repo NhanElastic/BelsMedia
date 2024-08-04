@@ -1,8 +1,4 @@
 from django import forms
-from datetime import timedelta
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth.hashers import check_password
-from ..models import UserProfile
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=100)
     password = forms.CharField(widget=forms.PasswordInput)
