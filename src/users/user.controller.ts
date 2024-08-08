@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
 import { UserDTO } from "./user.dto";
 import { UserService } from "./user.service";
+import { JwtGuard } from "src/auth/guard/jwt-auth.guard";
 
 @Controller('users')
 
@@ -21,7 +22,8 @@ export class UserController{
         return {"message": (await currsuser).username};
     }
 
-    @Get('/user/:id')
+    // @UseGuards(JwtGuard)
+    @Get('id/:id')
     async getUser(@Body() id: string): Promise<UserDTO>{
         return await this.userService.findOne(id);
     }
@@ -36,5 +38,9 @@ export class UserController{
         return await this.userService.delete(id);
     }
 
-
+    @UseGuards(JwtGuard)
+    @Get(':username')
+    async getUserByUsername(@Param('username') username: string): Promise<UserDTO>{
+        return await this.userService.findByUsername(username);
+    }
 }

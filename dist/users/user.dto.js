@@ -27,11 +27,6 @@ __decorate([
     __metadata("design:type", String)
 ], UserDTO.prototype, "email", void 0);
 __decorate([
-    (0, class_transformer_1.Transform)(({ obj }) => obj.firstName + ' ' + obj.lastName),
-    (0, class_transformer_1.Expose)(),
-    __metadata("design:type", Object)
-], UserDTO.prototype, "fullname", void 0);
-__decorate([
     (0, class_transformer_1.Expose)(),
     __metadata("design:type", Boolean)
 ], UserDTO.prototype, "isActive", void 0);

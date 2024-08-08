@@ -1,9 +1,8 @@
 import { Body, Controller, Get, Post, Render, UseGuards, Request } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { SignInDto } from "./DTO/signin.dto";
 import { UserDTO } from "src/users/user.dto";
-import { AuthGuard } from "@nestjs/passport";
-import { LocalAuthGuard } from "./local-auth.guard";
+import { LocalAuthGuard } from "./guard/local-auth.guard";
+import { RefreshJwtGuard } from "./guard/refresh-jwt-auth.guard";
 
 @Controller()
 
@@ -12,21 +11,33 @@ export class AuthController {
         private readonly authService: AuthService
     ) {}
 
-    @Get('/login')
-    @Render('auth/login')
-    getLogin() {
+
+    @Get('login')
+    @Render('auth/login/login.hbs')
+    loginForm(){
     }
+
 
     @UseGuards(LocalAuthGuard)
     @Post('login')
-    async login(@Request() req): Promise<{message:string}>{
+    async login(@Request() req){
+        return this.authService.login(req.user);
+    }
+
+    @Get('profile')
+    getProfile(@Request() req){
         return req.user;
     }
 
-
-    @Post('signup')
-    signUp(@Body() signUpDto: UserDTO): Promise<{message:string}>{
+    @Post('register')
+    register(@Body() signUpDto: UserDTO): Promise<{message:string}>{
         return this.authService.SignUp(signUpDto);
+    }
+
+    @UseGuards(RefreshJwtGuard)
+    @Post('refresh')
+    async refresh(@Request() req){
+        return this.authService.refreshToken(req.user);
     }
 
 }

@@ -13,10 +13,10 @@ exports.LocalStrategy = void 0;
 const passport_local_1 = require("passport-local");
 const passport_1 = require("@nestjs/passport");
 const common_1 = require("@nestjs/common");
-const auth_service_1 = require("./auth.service");
+const auth_service_1 = require("../auth.service");
 let LocalStrategy = class LocalStrategy extends (0, passport_1.PassportStrategy)(passport_local_1.Strategy) {
     constructor(authService) {
-        super();
+        super({});
         this.authService = authService;
     }
     async validate(username, password) {

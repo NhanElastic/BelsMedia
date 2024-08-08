@@ -24,35 +24,36 @@ export class AuthService{
 
     async validateUser(username: string, password: string): Promise<any>{
         const user = await this.userService.findByUsername(username);
-        if(user && user.password === password){
+        if(user && await bcrypt.compare(password, user.password)){
             const {password, ...result} = user;
             return result;
         }
+        return null
 
     }
 
-    async login(username: string){
-        const user = await this.userService.findByUsername(username);
-        const payload = {username: user.username, sub: user.id, email: user.email};
+    async login(user: UserEntity){
+        const payload = {
+            username: user.username,
+            sub: user.id,
+        };
         return {
-            accesstoken: this.jwtService.sign(payload, {expiresIn: '15m'}),
-            refreshtoken: this.jwtService.sign(payload, {expiresIn: '3d'})
-        }
+            ...user,
+            accesstoken: this.jwtService.sign(payload),
+            refreshtoken: this.jwtService.sign(payload, {expiresIn: '3d', secret: `${process.env.REFRESH_TOKEN_SECRET_KEY}`}),
+        };
     }
 
-    async isRefreshTokenExisting(username: string): Promise<boolean>{
-        return await this.authRepository.existsBy({username: username});
-        
+    async refreshToken(user: UserEntity){
+        const payload = {
+            username: user.username,
+            sub: user.id,
+        };
+        return {
+            accesstoken: this.jwtService.sign(payload),
+        };
     }
 
-    async generateRefreshToken(user: UserEntity): Promise<string>{
-        const payload = {username: user.username, sub: user.id, email: user.email};
-        return this.jwtService.sign(payload, {expiresIn: '3d',secret: process.env['REFRESHTOKEN']});
-    }
-    async generateAccessToken(user: UserEntity): Promise<string>{
-        const payload = {username: user.username, sub: user.id, email: user.email};
-        return this.jwtService.sign(payload, {expiresIn: '15m', secret: process.env['ACCESSTOKEN']});
-    }
 
     async SignUp(signUpDto: UserDTO): Promise<{message: string}>{
         const usernameExisting = await this.userService.findByUsername(signUpDto.username);
@@ -69,25 +70,6 @@ export class AuthService{
         return {message: 'User created'};
     }
 
-    async SignIn(signInDto: SignInDto): Promise<{accesstoken: string}>{
-        
-            const user = await this.userService.findByUsername(signInDto.username);
-            if(user){
-                const passwordMatch = await bcrypt.compare(signInDto.password, user.password);
-                if(!passwordMatch){
-                    throw new UnauthorizedException('Incorrect password');
-                }
-                const check = await this.isRefreshTokenExisting(user.username);
-                if(!check){
-                    const refreshToken = await this.generateRefreshToken(user);
-                    await this.authRepository.save({username: user.username, refreshtoken: refreshToken});
-                }
-                // return {accesstoken: refreshToken};
-                const accesstoken = await this.generateAccessToken(user);
-                return {accesstoken};
-            }
-            throw new UnauthorizedException('User not found');
 
-    }
 
 }

@@ -16,28 +16,35 @@ exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
 const user_dto_1 = require("../users/user.dto");
-const local_auth_guard_1 = require("./local-auth.guard");
+const local_auth_guard_1 = require("./guard/local-auth.guard");
+const refresh_jwt_auth_guard_1 = require("./guard/refresh-jwt-auth.guard");
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
     }
-    getLogin() {
+    loginForm() {
     }
     async login(req) {
+        return this.authService.login(req.user);
+    }
+    getProfile(req) {
         return req.user;
     }
-    signUp(signUpDto) {
+    register(signUpDto) {
         return this.authService.SignUp(signUpDto);
+    }
+    async refresh(req) {
+        return this.authService.refreshToken(req.user);
     }
 };
 exports.AuthController = AuthController;
 __decorate([
-    (0, common_1.Get)('/login'),
-    (0, common_1.Render)('auth/login'),
+    (0, common_1.Get)('login'),
+    (0, common_1.Render)('auth/login/login.hbs'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], AuthController.prototype, "getLogin", null);
+], AuthController.prototype, "loginForm", null);
 __decorate([
     (0, common_1.UseGuards)(local_auth_guard_1.LocalAuthGuard),
     (0, common_1.Post)('login'),
@@ -47,12 +54,27 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([
-    (0, common_1.Post)('signup'),
+    (0, common_1.Get)('profile'),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "getProfile", null);
+__decorate([
+    (0, common_1.Post)('register'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_dto_1.UserDTO]),
     __metadata("design:returntype", Promise)
-], AuthController.prototype, "signUp", null);
+], AuthController.prototype, "register", null);
+__decorate([
+    (0, common_1.UseGuards)(refresh_jwt_auth_guard_1.RefreshJwtGuard),
+    (0, common_1.Post)('refresh'),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "refresh", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

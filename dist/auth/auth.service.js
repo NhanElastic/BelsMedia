@@ -30,21 +30,31 @@ let AuthService = class AuthService {
     }
     async validateUser(username, password) {
         const user = await this.userService.findByUsername(username);
-        if (user && user.password === password) {
+        if (user && await bcrypt.compare(password, user.password)) {
             const { password, ...result } = user;
             return result;
         }
+        return null;
     }
-    async isRefreshTokenExisting(username) {
-        return await this.authRepository.existsBy({ username: username });
+    async login(user) {
+        const payload = {
+            username: user.username,
+            sub: user.id,
+        };
+        return {
+            ...user,
+            accesstoken: this.jwtService.sign(payload),
+            refreshtoken: this.jwtService.sign(payload, { expiresIn: '3d', secret: `${process.env.REFRESH_TOKEN_SECRET_KEY}` }),
+        };
     }
-    async generateRefreshToken(user) {
-        const payload = { username: user.username, sub: user.id, email: user.email };
-        return this.jwtService.sign(payload, { expiresIn: '3d', secret: process.env['REFRESHTOKEN'] });
-    }
-    async generateAccessToken(user) {
-        const payload = { username: user.username, sub: user.id, email: user.email };
-        return this.jwtService.sign(payload, { expiresIn: '15m', secret: process.env['ACCESSTOKEN'] });
+    async refreshToken(user) {
+        const payload = {
+            username: user.username,
+            sub: user.id,
+        };
+        return {
+            accesstoken: this.jwtService.sign(payload),
+        };
     }
     async SignUp(signUpDto) {
         const usernameExisting = await this.userService.findByUsername(signUpDto.username);
@@ -59,23 +69,6 @@ let AuthService = class AuthService {
         signUpDto.password = hashedPassword;
         await this.userService.save(signUpDto);
         return { message: 'User created' };
-    }
-    async SignIn(signInDto) {
-        const user = await this.userService.findByUsername(signInDto.username);
-        if (user) {
-            const passwordMatch = await bcrypt.compare(signInDto.password, user.password);
-            if (!passwordMatch) {
-                throw new common_1.UnauthorizedException('Incorrect password');
-            }
-            const check = await this.isRefreshTokenExisting(user.username);
-            if (!check) {
-                const refreshToken = await this.generateRefreshToken(user);
-                await this.authRepository.save({ username: user.username, refreshtoken: refreshToken });
-            }
-            const accesstoken = await this.generateAccessToken(user);
-            return { accesstoken };
-        }
-        throw new common_1.UnauthorizedException('User not found');
     }
 };
 exports.AuthService = AuthService;

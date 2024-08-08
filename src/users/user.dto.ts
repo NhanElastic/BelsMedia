@@ -13,9 +13,6 @@ export class UserDTO {
     @Expose()
     email: string;
 
-    @Transform(({obj})=>obj.firstName + ' ' + obj.lastName)
-    @Expose()
-    fullname
 
     @Expose()
     isActive: boolean;

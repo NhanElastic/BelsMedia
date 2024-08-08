@@ -12,4 +12,5 @@ export declare class UserController {
     deleteUser(id: string): Promise<{
         result: string;
     }>;
+    getUserByUsername(username: string): Promise<UserDTO>;
 }

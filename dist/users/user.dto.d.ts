@@ -5,7 +5,6 @@ export declare class UserDTO {
     password: string;
     username: string;
     email: string;
-    fullname: any;
     isActive: boolean;
     refreshtoken: string;
 }

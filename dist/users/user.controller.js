@@ -16,6 +16,7 @@ exports.UserController = void 0;
 const common_1 = require("@nestjs/common");
 const user_dto_1 = require("./user.dto");
 const user_service_1 = require("./user.service");
+const jwt_auth_guard_1 = require("../auth/guard/jwt-auth.guard");
 let UserController = class UserController {
     constructor(userService) {
         this.userService = userService;
@@ -36,6 +37,9 @@ let UserController = class UserController {
     async deleteUser(id) {
         return await this.userService.delete(id);
     }
+    async getUserByUsername(username) {
+        return await this.userService.findByUsername(username);
+    }
 };
 exports.UserController = UserController;
 __decorate([
@@ -52,7 +56,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "createUser", null);
 __decorate([
-    (0, common_1.Get)('/user/:id'),
+    (0, common_1.Get)('id/:id'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -72,6 +76,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "deleteUser", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtGuard),
+    (0, common_1.Get)(':username'),
+    __param(0, (0, common_1.Param)('username')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "getUserByUsername", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.Controller)('users'),
     __metadata("design:paramtypes", [user_service_1.UserService])
