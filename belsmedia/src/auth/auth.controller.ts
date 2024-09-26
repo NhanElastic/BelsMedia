@@ -13,19 +13,11 @@ export class AuthController {
         private readonly userService: UserService,
     ) {}
 
-
-    // @Get('login')
-    // @Render('auth/login')
-    // loginForm(){
-    // }
-
-
     @UseGuards(LocalAuthGuard)
     @Post('login')
     async login(@Request() req: any){
         return await this.authService.login(req.user);
     }
-
 
     @Post('register')
     register(@Body() signUpDto: UserDTO): Promise<{message:string}>{
