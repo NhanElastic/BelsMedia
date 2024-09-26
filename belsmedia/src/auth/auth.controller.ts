@@ -6,7 +6,6 @@ import { RefreshJwtGuard } from "./guards/refresh-jwt-auth.guard";
 import {UserService} from "../user/user.service";
 
 @Controller('/auth')
-
 export class AuthController {
     constructor(
         private readonly authService: AuthService,
@@ -21,15 +20,15 @@ export class AuthController {
 
     @Post('register')
     register(@Body() signUpDto: UserDTO): Promise<{message:string}>{
-        const user = this.authService.SignUp(signUpDto);
-        
+        const user = this.authService.SignUp(signUpDto);   
+
+        thrown new NotImplementedException();
     }
 
     @UseGuards(RefreshJwtGuard)
     @Post('refresh')
     async refresh(@Request() req: any): Promise<{accessToken: string}>{
         const accessToken = this.authService.refreshToken(req.user);
-        return {accessToken: accessToken};
+        return { accessToken };
     }
-
 }
